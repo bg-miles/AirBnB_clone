@@ -1,29 +1,29 @@
+#!/usr/bin/python3
+
 import uuid
 import datetime
+from models import storage
 
 
 class BaseModel:
 
     def __init__(self, *arg, **kwargs):
         if kwargs is not None and kwargs != {}:
-            for attr in kwargs:
-                if attr == "created_at":
-                    self.__dict__["created_at"] = datetime.datetime.strptime(
-                        kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f"
-                    )
-                elif attr == "updated_at":
-                    self.__dict__["updated_at"] = datetime.datetime.strptime(
-                        kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f"
-                    )
+            for attr, value in kwargs.items():
+                if attr == "created_at" or attr == "updated_at":
+                    date_string = "%Y-%m-%dT%H:%M:%S.%f"
+                    self.__dict__[attr] = datetime.datetime.strptime(value, date_string)
                 else:
-                    self.__dict__[attr] = kwargs[attr]
+                    self.__dict__[attr] = value
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.datetime.now()
             self.updated_at = datetime.datetime.now()
+            storage.new(self)
 
     def save(self):
         self.updated_at = datetime.datetime.now()
+        storage.save()
 
     def to_dict(self):
         dict_class = self.__dict__
@@ -33,4 +33,5 @@ class BaseModel:
         return dict_class
 
     def __str__(self):
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
+        cl_name = "self.__class__.__name__"
+        return "[{}] ({}) {}".format(cl_name, self.id, self.__dict__)

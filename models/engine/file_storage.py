@@ -1,16 +1,32 @@
-#from command import BaseModel
-import json
-class FileStorage:
-    def __init__(self, file_path, objects):
-        self.__file_path = file_path
-        self.__objects = objects
+#!/usr/bin/python3
 
+import os
+import json
+from models.base_model import BaseModel
+
+
+class FileStorage:
+    __file_path = "file.json"
+    __objects = {}
 
     def all(self):
-        return self.__objects
+        return FileStorage.__objects
+
     def new(self, obj):
-        pass
+        key = "{}.{}".format(type(obj).__class__, obj.id)
+        self.__objects[key] = obj
+
     def save(self):
-        pass
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
+            object_dict = {}
+            for key, value in FileStorage.__objects.items():
+                object_dict[key] = (
+                    value.to_dict() if hasattr(value, "to_dict") else value
+                )
+                json.dump(object_dict, f)
+
     def reload(self):
-        pass
+        if os.path.isfile(FileStorage.__file_path):
+            with open(FileStorage.__file_path, 'r', encoding='utf-8') as f:
+                dict_obj = json.load(f)
+        return None
