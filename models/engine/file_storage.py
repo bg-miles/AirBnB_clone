@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-import os
+from os import path
 import json
-from models.base_model import BaseModel
 
 
 class FileStorage:
@@ -26,7 +25,7 @@ class FileStorage:
                 json.dump(object_dict, f)
 
     def reload(self):
-        if os.path.isfile(FileStorage.__file_path):
+        if path.isfile(FileStorage.__file_path):
             with open(FileStorage.__file_path, 'r', encoding='utf-8') as f:
                 dict_obj = json.load(f)
         return None
